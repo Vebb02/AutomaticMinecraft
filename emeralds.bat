@@ -1,1 +1,1 @@
-start /B python3 script/on_rails.py
+start /B python3 script/main.py
