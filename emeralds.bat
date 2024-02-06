@@ -1,0 +1,1 @@
+start /B python3 script/on_rails.py

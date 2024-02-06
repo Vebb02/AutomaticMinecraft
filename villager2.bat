@@ -1,0 +1,1 @@
+start /B python3 script/villager_trading2.py
