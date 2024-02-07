@@ -1,7 +1,7 @@
 import pyautogui as p
 import keyboard
 
-DEFAULT_PAUSE = 0.04
+DEFAULT_PAUSE = 0.0005
 ITERATIONS = 100
 IMAGE_PATH = 'script/pictures/'
 IMAGE_FORMAT = '.png'
@@ -9,9 +9,7 @@ POSITION_PATH = 'script/positions.txt'
 
 #Functions
 def isInInventory():
-    p.PAUSE = .0005
     x = p.pixelMatchesColor(inside_inventory[0], inside_inventory[1], (198,198,198))
-    p.PAUSE = DEFAULT_PAUSE
     return x
 
 def click(x, y):
@@ -46,14 +44,17 @@ def trade():
     click(x3, y3)
 
 def throw_emerald_out():
+    p.sleep(0.1)
     try:
         file = IMAGE_PATH + 'bed' + IMAGE_FORMAT
         p.locateCenterOnScreen(file)
     except p.ImageNotFoundException:
         try:
             p.press('e')
+            p.sleep(0.1)
+            p.move(-50, 0)
             file = IMAGE_PATH + 'emerald_inventory' + IMAGE_FORMAT
-            x1, y1 = p.locateCenterOnScreen(file)
+            x1, y1 = p.locateCenterOnScreen(file, confidence = 0.9)
             click(x1, y1)
             x2, y2 = throw_out
             click(x2, y2)
@@ -124,6 +125,7 @@ try:
         for _ in range(ITERATIONS):
             #Enter crafting table, villager, etc...
             p.rightClick()
+            p.sleep(0.1)
             craft()
             trade()
             leave_inventory()
