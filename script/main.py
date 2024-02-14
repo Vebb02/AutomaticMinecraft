@@ -1,33 +1,41 @@
 import pyautogui as p
 import keyboard
+import time as t
 
-DEFAULT_PAUSE = 0.0005
+DEFAULT_PAUSE = 0
+SAFETY_PAUSE = 0.25
 ITERATIONS = 100
 IMAGE_PATH = 'script/pictures/'
 IMAGE_FORMAT = '.png'
 POSITION_PATH = 'script/positions.txt'
 
+emerald_counter = 0
+esc_counter = 0
+
 #Functions
-def isInInventory():
-    x = p.pixelMatchesColor(inside_inventory[0], inside_inventory[1], (198,198,198))
-    return x
+def is_in_inventory():
+    inventory_color = p.pixelMatchesColor(inside_inventory[0], inside_inventory[1], (198,198,198))
+    return inventory_color
 
 def click(x, y):
-    if isInInventory():
+    if is_in_inventory():
         p.moveTo(x, y)
-        if isInInventory():
+        if is_in_inventory():
             p.click()
+
+def safety():
+    p.sleep(SAFETY_PAUSE)
 
 def end_program():
     print("Ending program...")
     p.moveTo(0,0)
 
 def leave_inventory():
-    if isInInventory():
+    if is_in_inventory():
         p.press('esc')
 
 def craft():
-    if isInInventory():
+    if is_in_inventory():
         with p.hold('shift'):
             x1, y1 = recipe
             x2, y2 = finish_craft
@@ -44,21 +52,25 @@ def trade():
     click(x3, y3)
 
 def throw_emerald_out():
-    p.sleep(0.1)
+    safety()
+    p.moveTo(0, p.position().y)
+    safety()
     try:
         file = IMAGE_PATH + 'bed' + IMAGE_FORMAT
         p.locateCenterOnScreen(file)
     except p.ImageNotFoundException:
         try:
             p.press('e')
-            p.sleep(0.1)
-            p.move(-50, 0)
+            safety()
             file = IMAGE_PATH + 'emerald_inventory' + IMAGE_FORMAT
             x1, y1 = p.locateCenterOnScreen(file, confidence = 0.9)
             click(x1, y1)
             x2, y2 = throw_out
             click(x2, y2)
             p.press('e')
+            global emerald_counter
+            emerald_counter += 1
+            print(f"Emeralds, {t.ctime()}: {emerald_counter}")
         except p.ImageNotFoundException:
             ...
             
@@ -67,9 +79,21 @@ def exit_menu():
         file = IMAGE_PATH + 'esc' + IMAGE_FORMAT
         p.locateOnScreen(file)
         p.press('esc')
+        global esc_counter
+        esc_counter += 1
+        print(f"Esc, {t.ctime()}: {esc_counter}")
     except p.ImageNotFoundException:
         ...
 
+def rejoin():
+    try:
+        file = IMAGE_PATH + 'lost_connection' + IMAGE_FORMAT
+        p.locateOnScreen(file)
+        p.press('tab')
+        p.press('enter')
+        p.press('enter')
+    except p.ImageNotFoundException:
+        ...
 
 #Program start
 keyboard.add_hotkey('shift', end_program)
@@ -119,22 +143,27 @@ except FileNotFoundError:
 p.alert('Ready?')
 p.rightClick()
 
-#Main loop
-try:
-    while True:
-        for _ in range(ITERATIONS):
-            #Enter crafting table, villager, etc...
-            p.rightClick()
-            p.sleep(0.1)
-            craft()
-            trade()
+def main():
+    #Main loop
+    try:
+        while True:
+            for _ in range(ITERATIONS):
+                #Enter crafting table, villager, etc...
+                p.rightClick()
+                safety()
+                if is_in_inventory():
+                    craft()
+                    trade()
+                    leave_inventory()
+            throw_emerald_out()
+            exit_menu()
             leave_inventory()
-        throw_emerald_out()
-        exit_menu()
-        leave_inventory()
-except Exception as e:
-    #print(e.with_traceback())
-    ...
-finally:
-    keyboard.unhook_all()
-    print('successfully ended.')
+            rejoin()
+    except Exception as e:
+        #print(e.with_traceback())
+        ...
+    finally:
+        keyboard.unhook_all()
+        print('successfully ended.')
+
+main()

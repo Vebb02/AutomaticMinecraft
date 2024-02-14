@@ -1,11 +1,4 @@
-import pyautogui
-import time
+import pyautogui as p
 
-t = time.time()
-try:
-    x, y = pyautogui.locateCenterOnScreen('paper_to_emerald.png')
-    print(x, y)
-except:
-    ...
-print(time.time() - t)
-#print(time.time() - t)
+p.alert()
+print(p.position())
