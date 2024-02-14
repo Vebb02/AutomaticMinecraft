@@ -3,7 +3,7 @@ import keyboard
 import time as t
 
 DEFAULT_PAUSE = 0
-SAFETY_PAUSE = 0.25
+SAFETY_PAUSE = 0.3
 ITERATIONS = 100
 IMAGE_PATH = 'script/pictures/'
 IMAGE_FORMAT = '.png'
@@ -24,7 +24,9 @@ def click(x, y):
             p.click()
 
 def safety():
-    p.sleep(SAFETY_PAUSE)
+    start_time = t.time()
+    while t.time() - start_time < SAFETY_PAUSE and not is_in_inventory():
+        ...
 
 def end_program():
     print("Ending program...")
@@ -52,9 +54,6 @@ def trade():
     click(x3, y3)
 
 def throw_emerald_out():
-    safety()
-    p.moveTo(0, p.position().y)
-    safety()
     try:
         file = IMAGE_PATH + 'bed' + IMAGE_FORMAT
         p.locateCenterOnScreen(file)
@@ -62,6 +61,8 @@ def throw_emerald_out():
         try:
             p.press('e')
             safety()
+            p.moveTo(0, p.position().y)
+            p.sleep(0.1)
             file = IMAGE_PATH + 'emerald_inventory' + IMAGE_FORMAT
             x1, y1 = p.locateCenterOnScreen(file, confidence = 0.9)
             click(x1, y1)
@@ -140,21 +141,22 @@ except FileNotFoundError:
     with open(POSITION_PATH, 'w') as f:
         positions = f.write(positions)
 
-p.alert('Ready?')
-p.rightClick()
-
 def main():
+    p.alert('Ready?')
+    p.rightClick()
+
     #Main loop
     try:
         while True:
             for _ in range(ITERATIONS):
                 #Enter crafting table, villager, etc...
-                p.rightClick()
-                safety()
-                if is_in_inventory():
-                    craft()
-                    trade()
-                    leave_inventory()
+                if not is_in_inventory():
+                    p.rightClick()
+                    safety()
+                    if is_in_inventory():
+                        craft()
+                        trade()
+                        leave_inventory()
             throw_emerald_out()
             exit_menu()
             leave_inventory()
@@ -166,4 +168,4 @@ def main():
         keyboard.unhook_all()
         print('successfully ended.')
 
-main()
+main()   
