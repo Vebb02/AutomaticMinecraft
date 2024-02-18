@@ -5,7 +5,7 @@ import time as t
 DEFAULT_PAUSE = 0
 SAFETY_PAUSE = 0.3
 ITERATIONS = 100
-IMAGE_PATH = 'script/pictures/'
+IMAGE_PATH = 'script/pictures/trading/'
 IMAGE_FORMAT = '.png'
 POSITION_PATH = 'script/positions.txt'
 
@@ -49,6 +49,7 @@ def trade():
     x2, y2 = execute_trade
     x3, y3 = throw_out
     click(x1, y1)
+    click(x2, y2)
     click(x2, y2)
     click(x2, y2)
     click(x3, y3)
@@ -155,7 +156,8 @@ def main():
                     safety()
                     if is_in_inventory():
                         craft()
-                        trade()
+                        for _ in range(6):
+                            trade()
                         leave_inventory()
             throw_emerald_out()
             exit_menu()

@@ -1,1 +1,1 @@
-start /B python3 script/main.py
+start /B python3 script/trading.py
