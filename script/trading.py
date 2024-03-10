@@ -98,7 +98,8 @@ def rejoin():
         ...
 
 #Program start
-keyboard.add_hotkey('shift', end_program)
+# keyboard.add_hotkey('shift', end_program)
+keyboard.add_hotkey('pause', end_program)
 
 p.FAILSAFE = True
 p.PAUSE = DEFAULT_PAUSE
