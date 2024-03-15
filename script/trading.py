@@ -58,6 +58,8 @@ def throw_emerald_out():
     try:
         file = IMAGE_PATH + 'bed' + IMAGE_FORMAT
         p.locateCenterOnScreen(file)
+        p.typewrite('zzz')
+        p.press('enter')
     except p.ImageNotFoundException:
         try:
             p.press('e')
